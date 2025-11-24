@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
+import { ObjectId } from 'mongodb';
 import { SyncPayload } from '@/lib/types';
 
 export async function POST(request: Request) {
@@ -23,7 +24,7 @@ export async function POST(request: Request) {
     if (products && products.length > 0) {
       const productOps = products.map(product => ({
         updateOne: {
-          filter: { _id: product.id },
+          filter: { _id: new ObjectId(product.id) },
           update: { $set: { name: product.name, price: product.price, createdAt: new Date(product.createdAt) } },
           upsert: true,
         }
@@ -33,15 +34,15 @@ export async function POST(request: Request) {
     }
 
     if (sales && sales.length > 0) {
-        const saleOps = sales.map(sale => ({
-            updateOne: {
-              filter: { _id: sale.id },
-              update: { $set: { ...sale, saleDate: new Date(sale.saleDate), _id: sale.id } },
-              upsert: true,
-            }
-        }));
-        await saleCollection.bulkWrite(saleOps);
-        syncedIds.saleIds = sales.map(s => s.id);
+      const saleOps = sales.map(sale => ({
+        updateOne: {
+          filter: { _id: new ObjectId(sale.id) },
+          update: { $set: { productId: sale.productId, quantity: sale.quantity, total: sale.total, saleDate: new Date(sale.saleDate) } },
+          upsert: true,
+        }
+      }));
+      await saleCollection.bulkWrite(saleOps);
+      syncedIds.saleIds = sales.map(s => s.id);
     }
 
     return NextResponse.json({ message: 'Sync successful', syncedIds }, { status: 200 });
