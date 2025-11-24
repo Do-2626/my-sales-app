@@ -11,6 +11,7 @@ export interface Sale {
   productId: string;
   quantity: number;
   totalPrice: number;
+  total?: number; // optional alias for compatibility with API
   saleDate: number; // timestamp
   isSynced: boolean;
 }
