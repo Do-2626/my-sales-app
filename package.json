@@ -1,6 +1,9 @@
 {
   "name": "my-sales-app",
   "version": "0.1.0",
+  "engines": {
+    "node": ">=18 <19"
+  },
   "private": true,
   "scripts": {
     "dev": "next dev",
